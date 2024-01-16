@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:qrpay/backend/utils/custom_loading_api.dart';
@@ -15,6 +18,8 @@ import 'package:qrpay/widgets/text_labels/custom_title_heading_widget.dart';
 
 import '../../backend/utils/no_data_widget.dart';
 import '../../widgets/bottom_navbar/transaction_history_widget.dart';
+import 'balance_show.dart';
+import 'home_slider.dart';
 
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
@@ -23,9 +28,11 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.getNotice();
     return ResponsiveLayout(
       mobileScaffold: Scaffold(
-        body: Obx(() => controller.isLoading
+        body: Obx(() =>
+        controller.isLoading
             ? const CustomLoadingAPI()
             : _bodyWidget(context)),
       ),
@@ -40,6 +47,8 @@ class DashboardScreen extends StatelessWidget {
       strokeWidth: 2.5,
       onRefresh: () async {
         controller.getDashboardData();
+        controller.getNotice();
+        controller.getSlider();
         return Future<void>.delayed(const Duration(seconds: 3));
       },
       child: Stack(
@@ -48,9 +57,13 @@ class DashboardScreen extends StatelessWidget {
             children: [
               _appbarContainer(context),
               _categoriesWidget(context),
+              HomeSlider(),
+              SizedBox(height: 16,),
+              _transactionWidget(context),
             ],
           ),
-          _draggableSheet(context)
+
+          // _draggableSheet(context)
         ],
       ),
     );
@@ -59,11 +72,11 @@ class DashboardScreen extends StatelessWidget {
   _draggableSheet(BuildContext context) {
     return DraggableScrollableSheet(
       builder: (_, scrollController) {
-        return _transactionWidget(context, scrollController);
+        return _transactionWidget(context);
       },
-      initialChildSize: 0.55,
-      minChildSize: 0.55,
-      maxChildSize: 0.80,
+      initialChildSize: 0.44,
+      minChildSize: 0.44,
+      maxChildSize: 1.00,
     );
   }
 
@@ -71,9 +84,10 @@ class DashboardScreen extends StatelessWidget {
     var data = controller.dashBoardModel.data.userWallet;
     return Container(
       alignment: Alignment.center,
-      height: MediaQuery.of(context).size.height * 0.17,
       decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+          color: Theme
+              .of(context)
+              .primaryColor,
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(Dimensions.radius * 2),
             bottomRight: Radius.circular(Dimensions.radius * 2),
@@ -81,14 +95,42 @@ class DashboardScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: mainCenter,
         children: [
-          CustomTitleHeadingWidget(
-            text: "${data.balance.toString()} ${data.currency}",
-            style: CustomStyle.darkHeading1TextStyle.copyWith(
-              fontSize: Dimensions.headingTextSize4 * 2,
-              fontWeight: FontWeight.w800,
-              color: CustomColor.whiteColor,
-            ),
+          GetBuilder<DashBoardController>(
+            assignId: true,
+            builder: (logic) {
+              return Obx(() {
+                return logic.noticeCirculer.value?CircularProgressIndicator():
+                logic.noticeModel!.data!=null?
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 12,vertical: 4),
+                  decoration:  BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8)
+                  ),
+                  width: 1.0.sw,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Text(logic.noticeModel.data!.title??"",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
+                      Html( data: logic.noticeModel!.data!.description??"",)
+                    ],
+                  ),
+                ):SizedBox();
+              });
+            },
           ),
+          SizedBox(height: 12,),
+          CustomAppBar(balance: "${data.balance.toString()} ${data.currency}"),
+          // CustomTitleHeadingWidget(
+          //   text: "${data.balance.toString()} ${data.currency}",
+          //   style: CustomStyle.darkHeading1TextStyle.copyWith(
+          //     fontSize: Dimensions.headingTextSize4 * 2,
+          //     fontWeight: FontWeight.w800,
+          //     color: CustomColor.whiteColor,
+          //   ),
+          // ),
+          SizedBox(height: 6,),
           CustomTitleHeadingWidget(
             text: Strings.currentBalance,
             style: CustomStyle.lightHeading4TextStyle.copyWith(
@@ -96,6 +138,7 @@ class DashboardScreen extends StatelessWidget {
               color: CustomColor.whiteColor.withOpacity(0.6),
             ),
           ),
+          SizedBox(height: 12,)
         ],
       ),
     );
@@ -119,24 +162,26 @@ class DashboardScreen extends StatelessWidget {
           shrinkWrap: true,
           children: List.generate(
             controller.categoriesData.length,
-            (index) => CategoriesWidget(
-              onTap: controller.categoriesData[index].onTap,
-              icon: controller.categoriesData[index].icon,
-              text: controller.categoriesData[index].text,
-            ),
+                (index) =>
+                CategoriesWidget(
+                  onTap: controller.categoriesData[index].onTap,
+                  icon: controller.categoriesData[index].icon,
+                  text: controller.categoriesData[index].text,
+                ),
           ),
         ));
   }
 
-  _transactionWidget(BuildContext context, ScrollController scrollController) {
+  _transactionWidget(BuildContext context,) {
     var data = controller.dashBoardModel.data.transactions;
     return data.isEmpty
         ? NoDataWidget(
-            title: Strings.noTransaction.tr,
-          )
-        : ListView(
-            padding:
-                EdgeInsets.symmetric(horizontal: Dimensions.paddingSize * 0.8),
+      title: Strings.noTransaction.tr,
+    )
+        : Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: ListView(
+            shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: [
               CustomTitleHeadingWidget(
@@ -144,33 +189,33 @@ class DashboardScreen extends StatelessWidget {
                 padding: EdgeInsets.only(top: Dimensions.paddingSize),
                 style: Get.isDarkMode
                     ? CustomStyle.darkHeading3TextStyle.copyWith(
-                        fontSize: Dimensions.headingTextSize2,
-                        fontWeight: FontWeight.w600,
-                      )
+                  fontSize: Dimensions.headingTextSize2,
+                  fontWeight: FontWeight.w600,
+                )
                     : CustomStyle.lightHeading3TextStyle.copyWith(
-                        fontSize: Dimensions.headingTextSize2,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  fontSize: Dimensions.headingTextSize2,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               verticalSpace(Dimensions.widthSize),
               SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: ListView.builder(
-                    controller: scrollController,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      return TransactionWidget(
-                        amount: data[index].requestAmount!,
-                        title: data[index].transactionType!,
-                        dateText: DateFormat.d().format(data[index].dateTime!),
-                        transaction: data[index].trx!,
-                        monthText:
-                            DateFormat.MMMM().format(data[index].dateTime!),
-                      );
-                    }),
-              )
-            ],
-          ).customGlassWidget();
+               child: ListView.builder(
+                shrinkWrap: true,
+                physics: const BouncingScrollPhysics(),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  return TransactionWidget(
+                    amount: data[index].requestAmount!,
+                    title: data[index].transactionType!,
+                    dateText: DateFormat.d().format(data[index].dateTime!),
+                    transaction: data[index].trx!,
+                    monthText:
+                    DateFormat.MMMM().format(data[index].dateTime!),
+                  );
+                }),
+          )
+                ],
+              ).customGlassWidget(),
+        );
   }
 }

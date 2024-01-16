@@ -29,9 +29,12 @@ class Data {
   dynamic baseCurr;
   ModuleAccess moduleAccess;
   String? activeVirtualSystem;
+  String? title;
+  String? description;
   UserWallet userWallet;
   dynamic defaultImage;
   dynamic imagePath;
+  dynamic image_url;
   User user;
   dynamic totalAddMoney;
   dynamic totalReceiveRemittance;
@@ -46,9 +49,12 @@ class Data {
     required this.baseCurr,
     required this.moduleAccess,
     required this.activeVirtualSystem,
+    required this.title,
+    required this.description,
     required this.userWallet,
     required this.defaultImage,
     required this.imagePath,
+    required this.image_url,
     required this.user,
     required this.totalAddMoney,
     required this.totalReceiveRemittance,
@@ -64,9 +70,12 @@ class Data {
         baseCurr: json["base_curr"] ?? "",
         moduleAccess: ModuleAccess.fromJson(json["module_access"]),
         activeVirtualSystem: json["active_virtual_system"],
+        title: json["title"],
+        description: json["description"],
         userWallet: UserWallet.fromJson(json["userWallet"]),
         defaultImage: json["default_image"] ?? '',
         imagePath: json["image_path"] ?? '',
+        image_url: json["image_url"] ?? '',
         user: User.fromJson(json["user"]),
         totalAddMoney: json["totalAddMoney"] ?? '',
         totalReceiveRemittance: json["totalReceiveRemittance"] ?? '',
@@ -83,9 +92,12 @@ class Data {
         "base_curr": baseCurr,
         "module_access": moduleAccess.toJson(),
         "active_virtual_system": activeVirtualSystem,
+        "title": title,
+        "description": description,
         "userWallet": userWallet.toJson(),
         "default_image": defaultImage,
         "image_path": imagePath,
+        "image_url": image_url,
         "user": user.toJson(),
         "totalAddMoney": totalAddMoney,
         "totalReceiveRemittance": totalReceiveRemittance,

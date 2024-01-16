@@ -27,7 +27,9 @@ class ApiEndpoint {
       '/user/register/verify/otp'.addBaseURl();
 
 //! navbar
+  static String sliderURL = '/user/offer-images'.addBaseURl();
   static String dashboardURL = '/user/dashboard'.addBaseURl();
+  static String noticeURL = '/user/notice'.addBaseURl();
   static String notificationsURL = '/user/notifications'.addBaseURl();
 
 //! profile

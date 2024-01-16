@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:qrpay/backend/model/common/common_success_model.dart';
 import 'package:qrpay/backend/model/remittance/remittance_get_recipient_model.dart';
 import 'package:qrpay/routes/routes.dart';
@@ -81,6 +83,7 @@ class RemittanceController extends GetxController {
 
       sendingCountryList = data.fromCountry;
       receivingCountryList = data.toCountries;
+      Logger().w(data.transactionTypes.length);
       transactionTypeList = data.transactionTypes;
 
       baseCurrency.value = data.userWallet.currency;
@@ -180,7 +183,7 @@ class RemittanceController extends GetxController {
   Future<RemittanceGetRecipientModel> remittanceGetRecipientProcess() async {
     _isGetRemittance.value = true;
     recipientList.clear();
-    selectedRecipient.value = "No Recipient";
+    selectedRecipient.value = "No Account Select";
     update();
 
     Map<String, dynamic> inputBody = {

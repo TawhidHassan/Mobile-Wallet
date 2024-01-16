@@ -1,4 +1,6 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 import 'package:qrpay/backend/model/auth/login/reset_password.dart';
 import 'package:qrpay/backend/model/auth/registation/basic_data_model.dart';
 import 'package:qrpay/backend/model/categories/receive_money/receive_money_model.dart';
@@ -6,6 +8,7 @@ import 'package:qrpay/backend/model/categories/send_money/send_money_info_model.
 import 'package:qrpay/backend/model/categories/virtual_card/virtual_card_flutter_wave/card_info_model.dart';
 import 'package:qrpay/backend/model/recipient_models/check_recipient_model.dart';
 
+import '../../data/slider_model.dart';
 import '../model/app_settings/app_settings_model.dart';
 import '../model/auth/login/forget_password_model.dart';
 import '../model/auth/login/login_model.dart';
@@ -353,6 +356,33 @@ class ApiServices {
 
 //!  dashboard Api method
 
+  static Future<SliderResponse?> getSliderApi() async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).get(
+        ApiEndpoint.sliderURL,
+        code: 200,
+      );
+
+      print("===========Before if Response============");
+      print(mapResponse);
+      Logger().d(mapResponse);
+
+      if (mapResponse != null) {
+        print("===========Response============");
+
+        SliderResponse dashboardModel = SliderResponse.fromJson(mapResponse);
+        return dashboardModel;
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from Dashboard Api service ==> $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong! in Dashboard Api');
+      return null;
+    }
+    return null;
+  }
+
+
   static Future<DashboardModel?> dashboardApi() async {
     Map<String, dynamic>? mapResponse;
     try {
@@ -368,6 +398,33 @@ class ApiServices {
         print("===========Response============");
 
         DashboardModel dashboardModel = DashboardModel.fromJson(mapResponse);
+
+        return dashboardModel;
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from Dashboard Api service ==> $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong! in Dashboard Api');
+      return null;
+    }
+    return null;
+  }
+
+
+  static Future<NoticeResponse?> getNotice() async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).get(
+        ApiEndpoint.noticeURL,
+        code: 200,
+      );
+
+      print("===========Before if Response============");
+      print(mapResponse);
+
+      if (mapResponse != null) {
+        print("===========Response============");
+
+        NoticeResponse dashboardModel = NoticeResponse.fromJson(mapResponse);
 
         return dashboardModel;
       }
@@ -1938,4 +1995,8 @@ class ApiServices {
     }
     return null;
   }
+
+
+
+
 }

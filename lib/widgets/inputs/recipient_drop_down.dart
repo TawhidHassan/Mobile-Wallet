@@ -38,7 +38,7 @@ class RecipientDropDown extends StatelessWidget {
             hint: Padding(
               padding: EdgeInsets.only(left: Dimensions.paddingSize * 0.7),
               child: Text(
-                "Account Number",
+                selectMethod.value,
                 style: GoogleFonts.inter(
                     fontSize: Dimensions.headingTextSize4,
                     fontWeight: FontWeight.w600,

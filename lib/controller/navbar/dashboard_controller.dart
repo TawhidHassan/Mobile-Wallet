@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../backend/model/bottom_navbar_model/dashboard_model.dart';
 import '../../backend/services/api_services.dart';
 import '../../custom_assets/assets.gen.dart';
+import '../../data/slider_model.dart';
 import '../../model/categories_model.dart';
 import '../../routes/routes.dart';
 import '../../utils/strings.dart';
@@ -13,6 +14,7 @@ class DashBoardController extends GetxController {
   @override
   void onInit() {
     getDashboardData();
+    getNotice();
     super.onInit();
   }
 
@@ -20,12 +22,37 @@ class DashBoardController extends GetxController {
 
   bool get isLoading => _isLoading.value;
   late DashboardModel _dashboardModel;
+  NoticeResponse? noticeModel;
+  late SliderResponse sliderModel;
 
   DashboardModel get dashBoardModel => _dashboardModel;
+
+  final circuler = false.obs;
+  final noticeCirculer = false.obs;
+  Future getSlider() async{
+    circuler.value=true;
+    await ApiServices.getSliderApi().then((value) {
+      sliderModel = value!;
+      update();
+      circuler.value=false;
+    });
+  }
+
+  Future getNotice() async{
+    noticeCirculer.value=true;
+    await ApiServices.getNotice().then((value) {
+      noticeModel = value!;
+      update();
+      noticeCirculer.value=false;
+    });
+  }
+
 
   Future<DashboardModel> getDashboardData() async {
     _isLoading.value = true;
     update();
+
+
 
     // calling  from api service
     await ApiServices.dashboardApi().then((value) {
@@ -109,4 +136,6 @@ class DashBoardController extends GetxController {
     update();
     return _dashboardModel;
   }
+
+
 }
