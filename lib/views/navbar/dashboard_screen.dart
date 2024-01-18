@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:marquee/marquee.dart';
 import 'package:qrpay/backend/utils/custom_loading_api.dart';
 import 'package:qrpay/controller/navbar/dashboard_controller.dart';
 import 'package:qrpay/utils/custom_color.dart';
@@ -59,7 +60,7 @@ class DashboardScreen extends StatelessWidget {
               _categoriesWidget(context),
               HomeSlider(),
               SizedBox(height: 16,),
-              _transactionWidget(context),
+              // _transactionWidget(context),
             ],
           ),
 
@@ -109,13 +110,22 @@ class DashboardScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8)
                   ),
                   width: 1.0.sw,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Text(logic.noticeModel.data!.title??"",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      Html( data: logic.noticeModel!.data!.description??"",)
-                    ],
-                  ),
+                  height: 30,
+                  child: Marquee(
+                  text:logic.noticeModel!.data!.description??"",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,),
+                  scrollAxis: Axis.horizontal,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  blankSpace: 20.0,
+                  velocity: 100.0,
+                  pauseAfterRound: Duration(seconds: 1),
+                  startPadding: 10.0,
+                  accelerationDuration: Duration(seconds: 1),
+                  accelerationCurve: Curves.linear,
+                  decelerationDuration: Duration(milliseconds: 500),
+                  decelerationCurve: Curves.easeOut,
+
+                                    ),
                 ):SizedBox();
               });
             },

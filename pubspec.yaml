@@ -41,7 +41,7 @@ dependencies:
   awesome_snackbar_content: ^0.1.1
   smooth_page_indicator: ^1.1.0
   carousel_indicator: ^1.0.6
-
+  marquee: ^2.2.3
 
   country_list_pick: ^1.0.1+6
   intl_phone_field: 3.2.0
